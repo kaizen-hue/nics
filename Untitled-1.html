@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sorry — Say Yes?</title>
+  <style>
+    :root {
+      --bg: #ffb6c1;
+      --accent: #ff6b81;
+      --muted: #4b1b2f;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(180deg, #ffb6c1 0%, #ff99aa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--muted);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.3);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1 { margin-bottom: 10px; }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 16px;
+      width: auto;
+    }
+
+    .btn-yes {
+      background: linear-gradient(90deg, #ff7eb9, #ff65a3);
+      color: white;
+    }
+
+    .btn-no {
+      background: transparent;
+      color: var(--muted);
+      border: 2px solid rgba(255,107,129,0.6);
+      cursor: default;
+      position: fixed;
+      width: auto;
+      pointer-events: none;
+    }
+
+    .falling {
+      position: fixed;
+      top: -100px;
+      font-weight: bold;
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation: drop linear forwards;
+    }
+
+    @keyframes drop {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* bottom image styling */
+    .bottom-image {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .bottom-image img {
+      width: 200px; /* adjust size here */
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="title">babe sorry na po</h1>
+    <p id="desc">bati na po tayo babe please</p>
+
+    <div class="buttons">
+      <button class="btn btn-yes" id="yesBtn">Yes ❤️</button>
+      <button class="btn btn-no" id="noBtn">No</button>
+    </div>
+
+    <!-- 🖼️ Bottom image -->
+    <div class="bottom-image">
+      <img src="ami-fat-cat-please.gif" alt="cat">
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+
+    // Start beside "Yes"
+    function placeNoNextToYes() {
+      const yesRect = yesBtn.getBoundingClientRect();
+      noBtn.style.left = yesRect.right + 20 + "px";
+      noBtn.style.top = yesRect.top + "px";
+    }
+
+    // Move No randomly when mouse gets near
+    function moveNoToRandom() {
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 50);
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      const distance = Math.hypot(dx, dy);
+      if (distance < 100) moveNoToRandom();
+    });
+
+    window.addEventListener("load", placeNoNextToYes);
+
+    // Falling text and images
+    function spawnFallingItems(count = 20) {
+      const images = ["ugat.jpg", "ugats.jpg"]; // your two image files
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement(Math.random() < 0.5 ? "div" : "img");
+
+        if (el.tagName === "DIV") {
+          el.textContent = "te amo";
+          el.style.fontSize = 40 + Math.random() * 30 + "px";
+          el.style.color = `rgb(255, ${80 + Math.random() * 100}, 120)`;
+        } else {
+          el.src = images[Math.floor(Math.random() * images.length)];
+          el.style.width = 100 + Math.random() * 80 + "px";
+          el.style.height = "auto";
+        }
+
+        el.className = "falling";
+        el.style.left = Math.random() * 100 + "vw";
+        const duration = 3 + Math.random() * 2;
+        el.style.animationDuration = `${duration}s`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), duration * 1000);
+      }
+    }
+
+    yesBtn.addEventListener("click", () => {
+      document.getElementById("title").textContent = "yehey!";
+      document.getElementById("desc").textContent = "Te amo ❤️";
+      setInterval(() => spawnFallingItems(25), 500);
+    });
+  </script>
+</body>
+</html>
